@@ -59,8 +59,9 @@ HISTORY_FILE = "uploadr.history"
 ##
 ##  You shouldn't need to modify anything below here
 ##
-FLICKR["secret" ] = "fb2377b77bd2639c"
-FLICKR["api_key" ] = "2d7076217eb2dc94997cba1bb61bd5b5"
+FLICKR["api_key" ] = os.environ['FLICKR_UPLOADR_PY_API_KEY']
+FLICKR["secret" ] = os.environ['FLICKR_UPLOADR_PY_SECRET']
+
 class APIConstants:
     base = "http://flickr.com/services/"
     rest   = base + "rest/"
