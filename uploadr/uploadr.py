@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, time, os, urllib2, shelve, string, xmltramp, mimetools, mimetypes, md5, webbrowser
+import sys, time, os, urllib2, shelve, string, xmltramp, mimetools, mimetypes, hashlib, webbrowser
 #
 #   uploadr.py
 #
@@ -103,7 +103,7 @@ class Uploadr:
         
         f = FLICKR[ api.secret ] + api.key + FLICKR[ api.key ] + foo
         #f = api.key + FLICKR[ api.key ] + foo
-        return md5.new( f ).hexdigest()
+        return hashlib.md5( f ).hexdigest()
    
     def urlGen( self , base,data, sig ):
         foo = base + "?"
