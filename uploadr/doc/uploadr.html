@@ -1,0 +1,219 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module uploadr</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>uploadr</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:///F:/development/portablegit/uploadr.py/uploadr/uploadr.py">f:\development\portablegit\uploadr.py\uploadr\uploadr.py</a></font></td></tr></table>
+    <p><tt>uploadr.py<br>
+&nbsp;<br>
+Upload&nbsp;images&nbsp;placed&nbsp;within&nbsp;a&nbsp;directory&nbsp;to&nbsp;your&nbsp;Flickr&nbsp;account.<br>
+&nbsp;<br>
+Requires:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;xmltramp&nbsp;<a href="http://www.aaronsw.com/2002/xmltramp/">http://www.aaronsw.com/2002/xmltramp/</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;flickr&nbsp;account&nbsp;<a href="http://flickr.com">http://flickr.com</a><br>
+&nbsp;<br>
+Inspired&nbsp;by:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://micampe.it/things/flickruploadr">http://micampe.it/things/flickruploadr</a><br>
+&nbsp;<br>
+Usage:<br>
+&nbsp;<br>
+The&nbsp;best&nbsp;way&nbsp;to&nbsp;use&nbsp;this&nbsp;is&nbsp;to&nbsp;just&nbsp;fire&nbsp;this&nbsp;up&nbsp;in&nbsp;the&nbsp;background&nbsp;and&nbsp;forget&nbsp;about&nbsp;it.<br>
+If&nbsp;you&nbsp;find&nbsp;you&nbsp;have&nbsp;CPU/Process&nbsp;limits,&nbsp;then&nbsp;setup&nbsp;a&nbsp;cron&nbsp;job.<br>
+&nbsp;<br>
+%nohup&nbsp;python&nbsp;uploadr.py&nbsp;-d&nbsp;&amp;<br>
+&nbsp;<br>
+cron&nbsp;entry&nbsp;(runs&nbsp;at&nbsp;the&nbsp;top&nbsp;of&nbsp;every&nbsp;hour&nbsp;)<br>
+0&nbsp;&nbsp;*&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;*&nbsp;/full/path/to/uploadr.py&nbsp;&gt;&nbsp;/dev/null&nbsp;2&gt;&amp;1<br>
+&nbsp;<br>
+September&nbsp;2005<br>
+Cameron&nbsp;Mallory&nbsp;&nbsp;&nbsp;cmallory/berserk.org<br>
+&nbsp;<br>
+This&nbsp;code&nbsp;has&nbsp;been&nbsp;updated&nbsp;to&nbsp;use&nbsp;the&nbsp;new&nbsp;Auth&nbsp;API&nbsp;from&nbsp;flickr.<br>
+&nbsp;<br>
+You&nbsp;may&nbsp;use&nbsp;this&nbsp;code&nbsp;however&nbsp;you&nbsp;see&nbsp;fit&nbsp;in&nbsp;any&nbsp;form&nbsp;whatsoever.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="hashlib.html">hashlib</a><br>
+<a href="mimetools.html">mimetools</a><br>
+<a href="mimetypes.html">mimetypes</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="shelve.html">shelve</a><br>
+<a href="string.html">string</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="time.html">time</a><br>
+<a href="urllib2.html">urllib2</a><br>
+</td><td width="25%" valign=top><a href="webbrowser.html">webbrowser</a><br>
+<a href="xmltramp.html">xmltramp</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="uploadr.html#APIConstants">APIConstants</a>
+</font></dt><dt><font face="helvetica, arial"><a href="uploadr.html#Uploadr">Uploadr</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="APIConstants">class <strong>APIConstants</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#APIConstants">APIConstants</a>&nbsp;class<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="APIConstants-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Constructor</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>auth</strong> = 'http://flickr.com/services/auth/'</dl>
+
+<dl><dt><strong>base</strong> = 'http://flickr.com/services/'</dl>
+
+<dl><dt><strong>frob</strong> = 'frob'</dl>
+
+<dl><dt><strong>key</strong> = 'api_key'</dl>
+
+<dl><dt><strong>method</strong> = 'method'</dl>
+
+<dl><dt><strong>perms</strong> = 'perms'</dl>
+
+<dl><dt><strong>rest</strong> = 'http://flickr.com/services/rest/'</dl>
+
+<dl><dt><strong>secret</strong> = 'secret'</dl>
+
+<dl><dt><strong>sig</strong> = 'api_sig'</dl>
+
+<dl><dt><strong>token</strong> = 'auth_token'</dl>
+
+<dl><dt><strong>upload</strong> = 'http://flickr.com/services/upload/'</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Uploadr">class <strong>Uploadr</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Uploadr">Uploadr</a>&nbsp;class<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Uploadr-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Constructor</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-authenticate"><strong>authenticate</strong></a>(self)</dt><dd><tt>Authenticate&nbsp;user&nbsp;so&nbsp;we&nbsp;can&nbsp;upload&nbsp;images</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-build_request"><strong>build_request</strong></a>(self, theurl, fields, files, txheaders<font color="#909090">=None</font>)</dt><dd><tt>build_request/encode_multipart_formdata&nbsp;code&nbsp;is&nbsp;from&nbsp;www.voidspace.org.uk/atlantibots/pythonutils.html<br>
+&nbsp;<br>
+Given&nbsp;the&nbsp;fields&nbsp;to&nbsp;set&nbsp;and&nbsp;the&nbsp;files&nbsp;to&nbsp;encode&nbsp;it&nbsp;returns&nbsp;a&nbsp;fully&nbsp;formed&nbsp;urllib2.Request&nbsp;object.<br>
+You&nbsp;can&nbsp;optionally&nbsp;pass&nbsp;in&nbsp;additional&nbsp;headers&nbsp;to&nbsp;encode&nbsp;into&nbsp;the&nbsp;opject.&nbsp;(Content-type&nbsp;and&nbsp;Content-length&nbsp;will&nbsp;be&nbsp;overridden&nbsp;if&nbsp;they&nbsp;are&nbsp;set).<br>
+fields&nbsp;is&nbsp;a&nbsp;sequence&nbsp;of&nbsp;(name,&nbsp;value)&nbsp;elements&nbsp;for&nbsp;regular&nbsp;form&nbsp;fields&nbsp;-&nbsp;or&nbsp;a&nbsp;dictionary.<br>
+files&nbsp;is&nbsp;a&nbsp;sequence&nbsp;of&nbsp;(name,&nbsp;filename,&nbsp;value)&nbsp;elements&nbsp;for&nbsp;data&nbsp;to&nbsp;be&nbsp;uploaded&nbsp;as&nbsp;files.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-cacheToken"><strong>cacheToken</strong></a>(self)</dt><dd><tt>cacheToken</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-checkToken"><strong>checkToken</strong></a>(self)</dt><dd><tt>flickr.auth.checkToken<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;credentials&nbsp;attached&nbsp;to&nbsp;an&nbsp;authentication&nbsp;token.<br>
+Authentication<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;require&nbsp;authentication.<br>
+Arguments<br>
+&nbsp;<br>
+api.key&nbsp;(Required)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Your&nbsp;API&nbsp;application&nbsp;key.&nbsp;See&nbsp;here&nbsp;for&nbsp;more&nbsp;details.<br>
+auth_token&nbsp;(Required)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;authentication&nbsp;token&nbsp;to&nbsp;check.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-encode_multipart_formdata"><strong>encode_multipart_formdata</strong></a>(self, fields, files, BOUNDARY<font color="#909090">='-----192.168.56.1.1.185220.1303072272.769.1-----'</font>)</dt><dd><tt>Encodes&nbsp;fields&nbsp;and&nbsp;files&nbsp;for&nbsp;uploading.<br>
+fields&nbsp;is&nbsp;a&nbsp;sequence&nbsp;of&nbsp;(name,&nbsp;value)&nbsp;elements&nbsp;for&nbsp;regular&nbsp;form&nbsp;fields&nbsp;-&nbsp;or&nbsp;a&nbsp;dictionary.<br>
+files&nbsp;is&nbsp;a&nbsp;sequence&nbsp;of&nbsp;(name,&nbsp;filename,&nbsp;value)&nbsp;elements&nbsp;for&nbsp;data&nbsp;to&nbsp;be&nbsp;uploaded&nbsp;as&nbsp;files.<br>
+Return&nbsp;(content_type,&nbsp;body)&nbsp;ready&nbsp;for&nbsp;urllib2.Request&nbsp;instance<br>
+You&nbsp;can&nbsp;optionally&nbsp;pass&nbsp;in&nbsp;a&nbsp;boundary&nbsp;string&nbsp;to&nbsp;use&nbsp;or&nbsp;we'll&nbsp;let&nbsp;mimetools&nbsp;provide&nbsp;one.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-getAuthKey"><strong>getAuthKey</strong></a>(self)</dt><dd><tt>Checks&nbsp;to&nbsp;see&nbsp;if&nbsp;the&nbsp;user&nbsp;has&nbsp;authenticated&nbsp;this&nbsp;application</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-getCachedToken"><strong>getCachedToken</strong></a>(self)</dt><dd><tt>Attempts&nbsp;to&nbsp;get&nbsp;the&nbsp;flickr&nbsp;token&nbsp;from&nbsp;disk.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-getFrob"><strong>getFrob</strong></a>(self)</dt><dd><tt>flickr.auth.getFrob<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;frob&nbsp;to&nbsp;be&nbsp;used&nbsp;during&nbsp;authentication.&nbsp;This&nbsp;method&nbsp;call&nbsp;must&nbsp;be&nbsp;<br>
+signed.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;require&nbsp;authentication.<br>
+Arguments<br>
+&nbsp;<br>
+api.key&nbsp;(Required)<br>
+Your&nbsp;API&nbsp;application&nbsp;key.&nbsp;See&nbsp;here&nbsp;for&nbsp;more&nbsp;details.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-getResponse"><strong>getResponse</strong></a>(self, url)</dt><dd><tt>Send&nbsp;the&nbsp;url&nbsp;and&nbsp;get&nbsp;a&nbsp;response.&nbsp;&nbsp;Let&nbsp;errors&nbsp;float&nbsp;up</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-getToken"><strong>getToken</strong></a>(self)</dt><dd><tt><a href="http://www.flickr.com/services/api/flickr.auth.getToken.html">http://www.flickr.com/services/api/flickr.auth.getToken.html</a><br>
+&nbsp;<br>
+flickr.auth.getToken<br>
+&nbsp;<br>
+Returns&nbsp;the&nbsp;auth&nbsp;token&nbsp;for&nbsp;the&nbsp;given&nbsp;frob,&nbsp;if&nbsp;one&nbsp;has&nbsp;been&nbsp;attached.&nbsp;This&nbsp;method&nbsp;call&nbsp;must&nbsp;be&nbsp;signed.<br>
+Authentication<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;require&nbsp;authentication.<br>
+Arguments<br>
+&nbsp;<br>
+NTC:&nbsp;We&nbsp;need&nbsp;to&nbsp;store&nbsp;the&nbsp;token&nbsp;in&nbsp;a&nbsp;file&nbsp;so&nbsp;we&nbsp;can&nbsp;get&nbsp;it&nbsp;and&nbsp;then&nbsp;check&nbsp;it&nbsp;insted&nbsp;of<br>
+getting&nbsp;a&nbsp;new&nbsp;on&nbsp;all&nbsp;the&nbsp;time.<br>
+&nbsp;<br>
+api.key&nbsp;(Required)<br>
+&nbsp;&nbsp;&nbsp;Your&nbsp;API&nbsp;application&nbsp;key.&nbsp;See&nbsp;here&nbsp;for&nbsp;more&nbsp;details.<br>
+frob&nbsp;(Required)<br>
+&nbsp;&nbsp;&nbsp;The&nbsp;frob&nbsp;to&nbsp;check.</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-grabNewImages"><strong>grabNewImages</strong></a>(self)</dt><dd><tt>grabNewImages</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-isGood"><strong>isGood</strong></a>(self, res)</dt><dd><tt>isGood</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-logUpload"><strong>logUpload</strong></a>(self, photoID, imageName)</dt><dd><tt>logUpload</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-reportError"><strong>reportError</strong></a>(self, res)</dt><dd><tt>reportError</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-run"><strong>run</strong></a>(self)</dt><dd><tt>run</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-signCall"><strong>signCall</strong></a>(self, data)</dt><dd><tt>Signs&nbsp;args&nbsp;via&nbsp;md5&nbsp;per&nbsp;<a href="http://www.flickr.com/services/api/auth.spec.html">http://www.flickr.com/services/api/auth.spec.html</a>&nbsp;(Section&nbsp;8)</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-upload"><strong>upload</strong></a>(self)</dt><dd><tt>upload</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-uploadImage"><strong>uploadImage</strong></a>(self, image)</dt><dd><tt>uploadImage</tt></dd></dl>
+
+<dl><dt><a name="Uploadr-urlGen"><strong>urlGen</strong></a>(self, base, data, sig)</dt><dd><tt>urlGen</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>TOKEN_FILE</strong> = '.flickrToken'</dl>
+
+<dl><dt><strong>perms</strong> = ''</dl>
+
+<dl><dt><strong>token</strong> = None</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>FLICKR</strong> = {'api_key': 'test', 'description': '', 'is_family': '0', 'is_friend': '0', 'is_public': '1', 'secret': 'test', 'tags': 'auto-upload', 'title': ''}<br>
+<strong>HISTORY_FILE</strong> = 'uploadr.history'<br>
+<strong>IMAGE_DIR</strong> = 'images/'<br>
+<strong>SLEEP_TIME</strong> = 60<br>
+<strong>api</strong> = &lt;uploadr.APIConstants instance&gt;</td></tr></table>
+</body></html>

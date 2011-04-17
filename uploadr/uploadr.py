@@ -1,34 +1,40 @@
 #!/usr/bin/env python
 
+"""
+   uploadr.py
+
+   Upload images placed within a directory to your Flickr account.
+
+   Requires:
+       xmltramp http://www.aaronsw.com/2002/xmltramp/
+       flickr account http://flickr.com
+
+   Inspired by:
+        http://micampe.it/things/flickruploadr
+
+   Usage:
+
+   The best way to use this is to just fire this up in the background and forget about it.
+   If you find you have CPU/Process limits, then setup a cron job.
+
+   %nohup python uploadr.py -d &
+
+   cron entry (runs at the top of every hour )
+   0  *  *   *   * /full/path/to/uploadr.py > /dev/null 2>&1
+
+   September 2005
+   Cameron Mallory   cmallory/berserk.org
+
+   This code has been updated to use the new Auth API from flickr.
+
+   You may use this code however you see fit in any form whatsoever.
+
+
+"""
+
 import sys, time, os, urllib2, shelve, string, xmltramp, mimetools, mimetypes, hashlib, webbrowser
-#
-#   uploadr.py
-#
-#   Upload images placed within a directory to your Flickr account.
-#
-#   Requires:
-#       xmltramp http://www.aaronsw.com/2002/xmltramp/
-#       flickr account http://flickr.com
-#
-#   Inspired by:
-#        http://micampe.it/things/flickruploadr
-#
-#   Usage:
-#
-#   The best way to use this is to just fire this up in the background and forget about it.
-#   If you find you have CPU/Process limits, then setup a cron job.
-#
-#   %nohup python uploadr.py -d &
-#
-#   cron entry (runs at the top of every hour )
-#   0  *  *   *   * /full/path/to/uploadr.py > /dev/null 2>&1
-#
-#   September 2005
-#   Cameron Mallory   cmallory/berserk.org
-#
-#   This code has been updated to use the new Auth API from flickr.
-#
-#   You may use this code however you see fit in any form whatsoever.
+
+
 #
 ##
 ##  Items you will want to change
@@ -63,6 +69,9 @@ FLICKR["api_key" ] = os.environ['FLICKR_UPLOADR_PY_API_KEY']
 FLICKR["secret" ] = os.environ['FLICKR_UPLOADR_PY_SECRET']
 
 class APIConstants:
+    """ APIConstants class 
+    """
+
     base = "http://flickr.com/services/"
     rest   = base + "rest/"
     auth   = base + "auth/"
@@ -77,24 +86,31 @@ class APIConstants:
     method = "method"
     
     def __init__( self ):
+       """ Constructor
+       """
        pass
        
 api = APIConstants()
 
 class Uploadr:
+    """ Uploadr class 
+    """
+    
     token = None
     perms = ""
     TOKEN_FILE = ".flickrToken"
     
     def __init__( self ):
+        """ Constructor
+        """
         self.token = self.getCachedToken()
 
 
 
-    """
-    Signs args via md5 per http://www.flickr.com/services/api/auth.spec.html (Section 8)
-    """
     def signCall( self, data):
+        """
+        Signs args via md5 per http://www.flickr.com/services/api/auth.spec.html (Section 8)
+        """
         keys = data.keys()
         keys.sort()
         foo = ""
@@ -106,35 +122,38 @@ class Uploadr:
         return hashlib.md5( f ).hexdigest()
    
     def urlGen( self , base,data, sig ):
+        """ urlGen
+        """
         foo = base + "?"
         for d in data: 
             foo += d + "=" + data[d] + "&"
         return foo + api.key + "=" + FLICKR[ api.key ] + "&" + api.sig + "=" + sig
         
  
-    #
-    #   Authenticate user so we can upload images
-    #
     def authenticate( self ):
-        print "Getting new Token"
+        """ Authenticate user so we can upload images
+        """
+
+        print("Getting new Token")
         self.getFrob()
         self.getAuthKey()
         self.getToken()   
         self.cacheToken()
 
-    """
-    flickr.auth.getFrob
-    
-    Returns a frob to be used during authentication. This method call must be 
-    signed.
-    
-    This method does not require authentication.
-    Arguments
-    
-    api.key (Required)
-    Your API application key. See here for more details.     
-    """
     def getFrob( self ):
+        """
+        flickr.auth.getFrob
+    
+        Returns a frob to be used during authentication. This method call must be 
+        signed.
+    
+        This method does not require authentication.
+        Arguments
+    
+        api.key (Required)
+        Your API application key. See here for more details.     
+        """
+    
         d = { 
             api.method  : "flickr.auth.getFrob"
             }
@@ -147,12 +166,12 @@ class Uploadr:
             else:
                 self.reportError( response )
         except:
-            print "Error getting frob:" , str( sys.exc_info() )
+            print (("Error getting frob:" , str( sys.exc_info() )))
 
-    """
-    Checks to see if the user has authenticated this application
-    """
     def getAuthKey( self ): 
+        """
+        Checks to see if the user has authenticated this application
+        """
         d =  {
             api.frob : FLICKR[ api.frob ], 
             api.perms : "write"  
@@ -164,33 +183,34 @@ class Uploadr:
             webbrowser.open( url )
             ans = raw_input("Have you authenticated this application? (Y/N): ")
         except:
-            print str(sys.exc_info())
+            print(str(sys.exc_info()))
         if ( ans.lower() == "n" ):
-            print "You need to allow this program to access your Flickr site."
-            print "A web browser should pop open with instructions."
-            print "After you have allowed access restart uploadr.py"
+            print("You need to allow this program to access your Flickr site.")
+            print("A web browser should pop open with instructions.")
+            print("After you have allowed access restart uploadr.py")
             sys.exit()    
 
-    """
-    http://www.flickr.com/services/api/flickr.auth.getToken.html
-    
-    flickr.auth.getToken
-    
-    Returns the auth token for the given frob, if one has been attached. This method call must be signed.
-    Authentication
-    
-    This method does not require authentication.
-    Arguments
-    
-    NTC: We need to store the token in a file so we can get it and then check it insted of
-    getting a new on all the time.
-        
-    api.key (Required)
-       Your API application key. See here for more details.
-    frob (Required)
-       The frob to check.         
-    """   
     def getToken( self ):
+        """
+        http://www.flickr.com/services/api/flickr.auth.getToken.html
+        
+        flickr.auth.getToken
+    
+        Returns the auth token for the given frob, if one has been attached. This method call must be signed.
+        Authentication
+    
+        This method does not require authentication.
+        Arguments
+    
+        NTC: We need to store the token in a file so we can get it and then check it insted of
+        getting a new on all the time.
+        
+        api.key (Required)
+           Your API application key. See here for more details.
+        frob (Required)
+           The frob to check.         
+        """   
+
         d = {
             api.method : "flickr.auth.getToken",
             api.frob : str(FLICKR[ api.frob ])
@@ -206,12 +226,12 @@ class Uploadr:
             else :
                 self.reportError( res )
         except:
-            print str( sys.exc_info() )
+            print(str(sys.exc_info()))
 
-    """
-    Attempts to get the flickr token from disk.
-    """
     def getCachedToken( self ): 
+        """
+        Attempts to get the flickr token from disk.
+       """
         if ( os.path.exists( self.TOKEN_FILE )):
             return open( self.TOKEN_FILE ).read()
         else :
@@ -220,26 +240,30 @@ class Uploadr:
 
 
     def cacheToken( self ):
+        """ cacheToken
+        """
+
         try:
             open( self.TOKEN_FILE , "w").write( str(self.token) )
         except:
-            print "Issue writing token to local cache " , str(sys.exc_info())
+            print("Issue writing token to local cache " , str(sys.exc_info()))
 
-    """
-    flickr.auth.checkToken
-
-    Returns the credentials attached to an authentication token.
-    Authentication
-    
-    This method does not require authentication.
-    Arguments
-    
-    api.key (Required)
-        Your API application key. See here for more details.
-    auth_token (Required)
-        The authentication token to check. 
-    """
     def checkToken( self ):    
+        """
+        flickr.auth.checkToken
+
+        Returns the credentials attached to an authentication token.
+        Authentication
+    
+        This method does not require authentication.
+        Arguments
+    
+        api.key (Required)
+            Your API application key. See here for more details.
+        auth_token (Required)
+            The authentication token to check. 
+        """
+
         if ( self.token == None ):
             return False
         else :
@@ -258,11 +282,14 @@ class Uploadr:
                 else :
                     self.reportError( res )
             except:
-                print str( sys.exc_info() )          
+                print(str(sys.exc_info()))
             return False
      
              
     def upload( self ):
+        """ upload
+        """
+
         newImages = self.grabNewImages()
         if ( not self.checkToken() ):
             self.authenticate()
@@ -272,6 +299,9 @@ class Uploadr:
         self.uploaded.close()
         
     def grabNewImages( self ):
+        """ grabNewImages
+        """
+
         images = []
         foo = os.walk( IMAGE_DIR )
         for data in foo:
@@ -285,8 +315,11 @@ class Uploadr:
                    
     
     def uploadImage( self, image ):
+        """ uploadImage
+        """
+
         if ( not self.uploaded.has_key( image ) ):
-            print "Uploading ", image , "...",
+            print("Uploading ", image , "...",)
             try:
                 photo = ('photo', image, open(image,'rb').read())
                 d = {
@@ -304,33 +337,34 @@ class Uploadr:
                 xml = urllib2.urlopen( url ).read()
                 res = xmltramp.parse(xml)
                 if ( self.isGood( res ) ):
-                    print "successful."
+                    print("successful.")
                     self.logUpload( res.photoid, image )
                 else :
-                    print "problem.."
+                    print("problem..")
                     self.reportError( res )
             except:
-                print str(sys.exc_info())
+                print(str(sys.exc_info()))
 
 
     def logUpload( self, photoID, imageName ):
+        """ logUpload
+        """
+
         photoID = str( photoID )
         imageName = str( imageName )
         self.uploaded[ imageName ] = photoID
         self.uploaded[ photoID ] = imageName
             
-    #
-    #
-    # build_request/encode_multipart_formdata code is from www.voidspace.org.uk/atlantibots/pythonutils.html
-    #
-    #
     def build_request(self, theurl, fields, files, txheaders=None):
         """
+        build_request/encode_multipart_formdata code is from www.voidspace.org.uk/atlantibots/pythonutils.html
+
         Given the fields to set and the files to encode it returns a fully formed urllib2.Request object.
         You can optionally pass in additional headers to encode into the opject. (Content-type and Content-length will be overridden if they are set).
         fields is a sequence of (name, value) elements for regular form fields - or a dictionary.
         files is a sequence of (name, filename, value) elements for data to be uploaded as files.    
         """
+
         content_type, body = self.encode_multipart_formdata(fields, files)
         if not txheaders: txheaders = {}
         txheaders['Content-type'] = content_type
@@ -345,6 +379,7 @@ class Uploadr:
         Return (content_type, body) ready for urllib2.Request instance
         You can optionally pass in a boundary string to use or we'll let mimetools provide one.
         """    
+
         CRLF = '\r\n'
         L = []
         if isinstance(fields, dict):
@@ -369,6 +404,9 @@ class Uploadr:
     
     
     def isGood( self, res ):
+        """ isGood
+        """
+
         if ( not res == "" and res('stat') == "ok" ):
             return True
         else :
@@ -376,23 +414,30 @@ class Uploadr:
             
             
     def reportError( self, res ):
-        try:
-            print "Error:", str( res.err('code') + " " + res.err('msg') )
-        except:
-            print "Error: " + str( res )
+        """ reportError
+        """
 
-    """
-    Send the url and get a response.  Let errors float up
-    """
+        try:
+            print("Error:", str( res.err('code') + " " + res.err('msg') ))
+        except:
+            print("Error: " + str( res ))
+
     def getResponse( self, url ):
+        """
+        Send the url and get a response.  Let errors float up
+        """
+
         xml = urllib2.urlopen( url ).read()
         return xmltramp.parse( xml )
             
 
     def run( self ):
+        """ run
+        """
+
         while ( True ):
             self.upload()
-            print "Last check: " , str( time.asctime(time.localtime()))
+            print("Last check: " , str( time.asctime(time.localtime())))
             time.sleep( SLEEP_TIME )
       
 if __name__ == "__main__":
