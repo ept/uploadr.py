@@ -87,7 +87,7 @@ class APIConstants:
     """ APIConstants class
     """
 
-    base = "http://flickr.com/services/"
+    base = "http://api.flickr.com/services/"#to get rid of POST 166 error (flickr)
     rest   = base + "rest/"
     auth   = base + "auth/"
     upload = base + "upload/"
