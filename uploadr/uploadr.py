@@ -382,6 +382,7 @@ class Uploadr:
         imageName = str( imageName )
         self.uploaded[ imageName ] = photoID
         self.uploaded[ photoID ] = imageName
+        self.uploaded.sync()
 
     def build_request(self, theurl, fields, files, txheaders=None):
         """
