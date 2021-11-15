@@ -217,7 +217,7 @@ class Uploadr:
         This method does not require authentication.
         Arguments
 
-        NTC: We need to store the token in a file so we can get it and then check it insted of
+        NTC: We need to store the token in a file so we can get it and then check it instead of
         getting a new on all the time.
 
         api.key (Required)
