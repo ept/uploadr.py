@@ -44,6 +44,7 @@ import time
 import urllib2
 import webbrowser
 import xmltramp
+import urllib
 
 #
 ##
@@ -120,6 +121,10 @@ class Uploadr:
         """
         self.token = self.getCachedToken()
 
+        if args.search_dups:
+            self.isDuplicate = self.isFlickrDuplicate
+        else:
+            self.isDuplicate = lambda image: self.uploaded.has_key(image)
 
 
     def signCall( self, data):
@@ -337,7 +342,7 @@ class Uploadr:
         """
 
         success = False
-        if ( not self.uploaded.has_key( image ) ):
+        if not self.isDuplicate(image):
             print("Uploading " + image + "...")
             try:
                 photo = ('photo', image, open(image,'rb').read())
@@ -370,6 +375,8 @@ class Uploadr:
                 else :
                     print("Problem:")
                     self.reportError( res )
+            except KeyboardInterrupt:
+                sys.exit(1)
             except:
                 print(str(sys.exc_info()))
         return success
@@ -458,6 +465,39 @@ class Uploadr:
         xml = urllib2.urlopen( url ).read()
         return xmltramp.parse( xml )
 
+    def isFlickrDuplicate(self, image):
+        """
+        flickr.photos.search
+
+        Searches the flickr service for an existing title.
+        """
+        if ( self.token == None ):
+            return False
+        else :
+            d = {
+                api.token  :  str(self.token) ,
+                api.method :  "flickr.photos.search",
+            }
+            search = os.path.basename(image).split('.')[0]
+            # Define search text
+            d['text'] = urllib.quote_plus(search)
+            # Only search user's own photos
+            d['user_id'] = 'me'
+
+            sig = self.signCall( d )
+            url = self.urlGen( api.rest, d, sig )
+            try:
+                xml = urllib2.urlopen( url ).read()
+                print xml
+                # The returned XML contains the original name if found
+                if xml.find(search) == -1:
+                    return False
+                else:
+                    print "Duplicate: ", search
+                    return True
+            except:
+                print(str(sys.exc_info()))
+            return False
 
     def run( self ):
         """ run
@@ -480,6 +520,8 @@ if __name__ == "__main__":
         help='Space-separated tags for uploaded images')
     parser.add_argument('-r', '--drip-feed',   action='store_true',
         help='Wait a bit between uploading individual images')
+    parser.add_argument('-s', '--search-dups',   action='store_true',
+                        help='Check Flickr for duplicate title before uploading')
     args = parser.parse_args()
 
     flick = Uploadr()
